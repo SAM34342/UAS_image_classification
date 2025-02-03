@@ -9,7 +9,7 @@ front_detections = model(front, conf=0.6, iou=0.6)
 back_detections = model(back, conf=0.6, iou=0.6)
 
 # Extract fruit bounding boxes from YOLO results
-def extract_fruits(detections):
+def net_fruits(detections):
     fruits = []
     for detection in detections:
         for box in detection.boxes:
@@ -20,8 +20,8 @@ def extract_fruits(detections):
     return fruits
 
 # Get fruits from both images
-front_fruits = extract_fruits(front_detections)
-back_fruits = extract_fruits(back_detections)
+front_fruits = net_fruits(front_detections)
+back_fruits = net_fruits(back_detections)
 
 # Calculate Intersection over Union (IoU)
 def calculate_iou(box1, box2):
@@ -65,6 +65,4 @@ for back_fruit in back_fruits:
 # Final fruit count
 print(f"The no of Final unique fruits: {len(unique_fruits)}")
 
-# Display detections
-for detection in front_detections + back_detections:
-    detection.show()
+
