@@ -50,6 +50,4 @@ Detect fruits in both images.
 
 Count unique fruits.
 
-Display the results with bounding boxes.
-
 
