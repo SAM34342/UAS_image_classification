@@ -1,0 +1,70 @@
+from ultralytics import YOLO
+import cv2
+model = YOLO("best.pt")
+front = cv2.imread("front_view.jpg")
+back = cv2.imread("back_view.jpg")
+
+# Detect fruits in both images
+front_detections = model(front, conf=0.6, iou=0.6)
+back_detections = model(back, conf=0.6, iou=0.6)
+
+# Extract fruit bounding boxes from YOLO results
+def extract_fruits(detections):
+    fruits = []
+    for detection in detections:
+        for box in detection.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])  # coordiantes for the box 
+            class_id = int(box.cls[0].item())       # class of fruits 
+            confidence = box.conf[0].item()         # Confidence score
+            fruits.append(((x1, y1, x2, y2), class_id, confidence))
+    return fruits
+
+# Get fruits from both images
+front_fruits = extract_fruits(front_detections)
+back_fruits = extract_fruits(back_detections)
+
+# Calculate Intersection over Union (IoU)
+def calculate_iou(box1, box2):
+    x1A, y1A, x2A, y2A = box1
+    x1B, y1B, x2B, y2B = box2
+
+    # Intersection area
+    inter_x1 = max(x1A, x1B)
+    inter_y1 = max(y1A, y1B)
+    inter_x2 = min(x2A, x2B)
+    inter_y2 = min(y2A, y2B)
+    inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
+
+    # Union area
+    area1 = (x2A - x1A) * (y2A - y1A)
+    area2 = (x2B - x1B) * (y2B - y1B)
+    union_area = area1 + area2 - inter_area
+
+    # IoU calculation
+    return inter_area / union_area if union_area > 0 else 0
+
+iou_threshold = 0.7  # Higher threshold reduces duplicates
+unique_fruits = front_fruits.copy()
+
+for back_fruit in back_fruits:
+    box_b, class_b, _ = back_fruit
+    duplicate_found = False
+
+    for front_fruit in front_fruits:
+        box_f, class_f, _ = front_fruit
+
+        if class_b == class_f: 
+            iou = calculate_iou(box_f, box_b)
+            if iou > iou_threshold:  
+                duplicate_found = True
+                break
+
+    if not duplicate_found:
+        unique_fruits.append(back_fruit)
+
+# Final fruit count
+print(f"The no of Final unique fruits: {len(unique_fruits)}")
+
+# Display detections
+for detection in front_detections + back_detections:
+    detection.show()
