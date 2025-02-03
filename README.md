@@ -40,19 +40,16 @@ opencv-python (for image processing)
 Pre-trained YOLO model (best.pt)
 
 Usage
-Place your images (front_view.jpg and back_view.jpg) in the project directory.
-
-Ensure the YOLO model file (best.pt) is available.
-
-Run the script:
-
-bash
-Copy
+Places the images (front_view.jpg and back_view.jpg) in the project directory.
 python fruit_detection.py
-The script will:
+
+
+To summarize:
 
 Detect fruits in both images.
 
 Count unique fruits.
 
 Display the results with bounding boxes.
+
+
