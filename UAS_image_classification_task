@@ -15,8 +15,9 @@ def net_fruits(detections):
         for box in detection.boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0])  # coordiantes for the box 
             class_id = int(box.cls[0].item())       # class of fruits 
-            confidence = box.conf[0].item()         # Confidence score
-            fruits.append(((x1, y1, x2, y2), class_id, confidence))
+            confidence = box.conf[0].item() 
+            if class_id != 3:                                    # Confidence score
+             fruits.append(((x1, y1, x2, y2), class_id, confidence))
     return fruits
 
 # Get fruits from both images
